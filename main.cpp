@@ -94,7 +94,7 @@ int main(int argc, char* argv[]){
   
   if(newDim<0)
    {
-    cout<<"K unspecified, using TW test\n";
+    cout<<" K unspecified, using TW test\n";
    }
 
   double m=25;
