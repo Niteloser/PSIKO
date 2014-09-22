@@ -98,7 +98,7 @@ int findScree(arma::vec evals)
         //cout<<"sigma= "<<sigma<<"\n";
 	double twstat=(lambda-mu)/sigma;
 	//cout<<"Tracy-Widom "<<twstat<<"\n";
-	if( twstat <-3.180381){return ret;}//tw 95% confidence interval no lower tail
+	if( twstat <0.9794){return ret;}//tw 95% confidence interval no lower tail
         ret++;  
     }
   return ret;
