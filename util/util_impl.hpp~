@@ -75,13 +75,13 @@ int findScree(arma::vec evals)
   //evals.print();
   for(int j=0;j<m-1;j++)
     {
-	cout<<"j= "<<j<<"\n";
+	//cout<<"j= "<<j<<"\n";
 	double l1=0.0,l2=0.0;
 	//cout<<"evals\n";
 	//cout<<"len of evals "<<evals.n_elem<<"\n";
 	for(int i=j;i<m;i++)
   	  {
-	   //cout<<evals(i)<<" ";
+	   cout<<evals(i)<<" ";
 	   l1+=evals(i);
 	   l2+=evals(i)*evals(i);
 	  }
@@ -89,7 +89,7 @@ int findScree(arma::vec evals)
 	//cout<<"l1= "<<l1<<"\n";
 	//cout<<"l2= "<<l2<<"\n";
 	double lambda=evals(j)*(m-(j+1))/l1;
-        cout<<"lambda= "<<lambda<<"\n";
+        //cout<<"lambda= "<<lambda<<"\n";
 	double nhat=l1*l1/l2;
 	//cout<<"nhat= "<<nhat<<"\n";
         double mu=(sqrt(nhat-1)+sqrt(m-1))*(sqrt(nhat-1)+sqrt(m-1))/nhat;
@@ -97,8 +97,8 @@ int findScree(arma::vec evals)
 	double sigma = (sqrt(nhat-1)+sqrt(m-1))/nhat*pow(1/sqrt(nhat-1)+1/sqrt(m-1),1.0/3);
         //cout<<"sigma= "<<sigma<<"\n";
 	double twstat=(lambda-mu)/sigma;
-	cout<<"Tracy-Widom "<<twstat<<"\n";
-	if( twstat <-3.180381){return ret;}//tw 95% confidence interval no lower tail
+	//cout<<"Tracy-Widom "<<twstat<<"\n";
+	if( twstat <0.9794){return ret;}//tw 95% confidence interval no lower tail
         ret++;  
     }
   return ret;
