@@ -21,6 +21,6 @@ double cdf(double x, double m, double s);
 
 void initialise(const arma::mat& observations, arma::mat& means);
 
-void my_optimize(arma::mat& means, arma::mat& X,double alpha=1);
+void my_optimize(arma::mat& means, arma::mat& X);
 
 #include "optimise_impl.hpp"

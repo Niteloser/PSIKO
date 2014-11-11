@@ -30,13 +30,14 @@ int main(int argc, char* argv[]){
 
   char qFile[512];
   char filename[512];
+  char red[512];
+  strcpy(red,"reduced_data.csv");
   int newDim=-1;
   char c;
   int iFlag=0;
-  double alpha=1.0;
   int lFlag=0;
 
-  while ((c = getopt (argc, argv, "i:K:q:a:l")) != -1)
+  while ((c = getopt (argc, argv, "i:K:q:r:l")) != -1)
          switch (c)
            {
            case 'i':
@@ -48,8 +49,8 @@ int main(int argc, char* argv[]){
            case 'K':
              newDim = atoi(optarg);
              break;
-           case 'a':
-              alpha=atof(optarg);
+           case 'r':
+              strcpy(red,optarg);
               break;
            case 'q':
              strcpy(qFile,optarg);
@@ -115,7 +116,7 @@ int main(int argc, char* argv[]){
   //cout<<"reduced data\n";
   //rDataset.print();
   initialise(rDataset,means);
-  my_optimize(means,rDataset,alpha);
+  my_optimize(means,rDataset);
   for(int i=0;i<means.n_cols;i++)
    {
     for(int j=0;j<means.n_rows;j++)
@@ -142,7 +143,7 @@ int main(int argc, char* argv[]){
    }
   qout.close();
   out.close();
-  ofstream rout("reduced_data.csv");
+  ofstream rout(red);
   for(int i=0;i<rDataset.n_cols;i++)
   {
     for(int j=0;j<rDataset.n_rows;j++)

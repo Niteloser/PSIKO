@@ -90,7 +90,7 @@ void initialise(const arma::mat& observations,
     }
 }
 
-void my_optimize(arma::mat& means, arma::mat& X,double alpha)
+void my_optimize(arma::mat& means, arma::mat& X)
   {
       double prev=0.0;
       double cur=0.0;
@@ -108,7 +108,7 @@ void my_optimize(arma::mat& means, arma::mat& X,double alpha)
             col=inferAncestry(c,A);
           }
           //2: estimate means
-          arma::mat I=0.5*alpha*arma::eye(means.n_cols,means.n_cols);
+          arma::mat I=0.5*arma::eye(means.n_cols,means.n_cols);
           means=arma::inv(Q*Q.t()+I.t()*I)*Q*X.t();
           means=means.t();
           arma::mat content= arma::ones(1,means.n_cols);
