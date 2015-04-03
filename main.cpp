@@ -31,13 +31,15 @@ int main(int argc, char* argv[]){
   char qFile[512];
   char filename[512];
   char red[512];
+  char ancestryFile[512];
   strcpy(red,"reduced_data.csv");
   int newDim=-1;
   char c;
   int iFlag=0;
   int lFlag=0;
+  int aFlag=0;
 
-  while ((c = getopt (argc, argv, "i:K:q:r:l")) != -1)
+  while ((c = getopt (argc, argv, "i:K:q:r:l:a")) != -1)
          switch (c)
            {
            case 'i':
@@ -49,6 +51,10 @@ int main(int argc, char* argv[]){
            case 'K':
              newDim = atoi(optarg);
              break;
+	   case 'a':
+	     aFlag=1;
+             strcpy(ancestryFile,optarg);
+	     break;
            case 'r':
               strcpy(red,optarg);
               break;
@@ -131,13 +137,21 @@ int main(int argc, char* argv[]){
   arma::mat A= arma::ones(1,means.n_cols); 
   A.insert_rows(1,means);
   A=arma::inv(A);
-
+  arma::mat Q;
+  if(aFlag)
+   {
+     Q=arma::zeros(rDataset.n_cols,means.n_cols);
+   }
   for(int i=0;i<rDataset.n_cols;i++)
    {
 	  arma::vec ancestry=inferAncestry(rDataset.unsafe_col(i),A);
         for(int j=0;j<ancestry.n_elem;j++)
           {
 		qout<<ancestry(j)<<" ";
+		if(aFlag)
+		{
+                  Q(i,j)=ancestry(j);
+		}
           }
 	  qout<<"\n";
    }
@@ -153,4 +167,9 @@ int main(int argc, char* argv[]){
     rout<<"\n";
   }
   rout.close();
+  if(aFlag)
+  {
+    localAncestry(dataset,evec,ancestryFile,Q);
+  }
+
 }
