@@ -139,7 +139,6 @@ arma::vec getWindow(arma::vec<unit>& col, int start, int end)
        else{ret(id)=0;}
        id++;
     }
-
-
+   return ret;
  }
 
