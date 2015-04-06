@@ -107,3 +107,39 @@ int findScree(arma::vec evals)
 inline int Factorial(int x) {
   return (x == 1 ? x : x * Factorial(x - 1));
 }
+
+
+arma::vec getWindow(arma::vec<unit>& col, int start, int end)
+ {
+   //return window of individual ind starting at start
+   int wSize=end-start;
+   arma::vec ret=arma::zeros<arma::vec>(wSize);
+   int startChunk=start/sz;    
+   int endChunk=end/sz;
+   int n=endChunk-startChunk+1;
+   int nr=col.n_elem;
+   unit* masks=new unit[n];
+   for(int i=0;i<n;i++)
+    {
+      masks[i]=-1;//all ones
+    }
+   masks[0]&=(1<<(sz-start%sz))-1;
+   masks[n-1]&=~((1<<(sz-end%sz))-1);
+   unit one=1<<(sz-1);//leading 1
+   int id=0;
+   for(int i=0;i<n*sz;i++)//loop over all chunks used
+    {
+     unit mask=masks[i/sz];
+     unit bit=one>>(i%sz);
+     if(bit&mask==0)continue;//outside window
+       unit chunk=col(i/sz);
+       unit chunk2=col(i/sz+nr/2);
+       if(chunk&bit>0 && chunk2&bit>0){ret(id)=2;}
+       else if(chunk&bit>0){ret(id)=1;}
+       else{ret(id)=0;}
+       id++;
+    }
+
+
+ }
+

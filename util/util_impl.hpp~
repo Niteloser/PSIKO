@@ -81,7 +81,7 @@ int findScree(arma::vec evals)
 	//cout<<"len of evals "<<evals.n_elem<<"\n";
 	for(int i=j;i<m;i++)
   	  {
-	   cout<<evals(i)<<" ";
+	   //cout<<evals(i)<<" ";
 	   l1+=evals(i);
 	   l2+=evals(i)*evals(i);
 	  }
@@ -107,3 +107,10 @@ int findScree(arma::vec evals)
 inline int Factorial(int x) {
   return (x == 1 ? x : x * Factorial(x - 1));
 }
+
+
+arma::vec getWindow(Mat<unit>& dataset, int wSize, int start, int ind)
+ {
+   //return window of individual ind starting at start
+ }
+
