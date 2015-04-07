@@ -16,6 +16,7 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
     */
 
+
 inline arma::vec inferAncestry(const arma::vec& x,const arma::mat& A)
 {
   arma::mat od=arma::ones(x.n_elem+1,1);
@@ -109,36 +110,61 @@ inline int Factorial(int x) {
 }
 
 
-arma::vec getWindow(arma::vec<unit>& col, int start, int end)
+arma::vec getWindow(const Col<unit>& col, long long start, long long end,long long L)
  {
    //return window of individual ind starting at start
+   end=min(end,L);
    int wSize=end-start;
    arma::vec ret=arma::zeros<arma::vec>(wSize);
    int startChunk=start/sz;    
    int endChunk=end/sz;
    int n=endChunk-startChunk+1;
    int nr=col.n_elem;
-   unit* masks=new unit[n];
+   Col<unit> masks(n);
    for(int i=0;i<n;i++)
     {
-      masks[i]=-1;//all ones
+      masks(i)=static_cast<unit>(-1);//all ones 
     }
-   masks[0]&=(1<<(sz-start%sz))-1;
-   masks[n-1]&=~((1<<(sz-end%sz))-1);
-   unit one=1<<(sz-1);//leading 1
+   masks(0)&=~((static_cast<unit>(1)<<(start%sz))-1);
+   masks(n-1)&=((static_cast<unit>(1)<<(end%sz))-1);
+   std::cout<<"masks"<<std::endl;
+   print_bits(masks);
    int id=0;
-   for(int i=0;i<n*sz;i++)//loop over all chunks used
-    {
-     unit mask=masks[i/sz];
-     unit bit=one>>(i%sz);
-     if(bit&mask==0)continue;//outside window
-       unit chunk=col(i/sz);
-       unit chunk2=col(i/sz+nr/2);
-       if(chunk&bit>0 && chunk2&bit>0){ret(id)=2;}
-       else if(chunk&bit>0){ret(id)=1;}
+   int chunkStart=start-(start%sz);
+   for(int i=0;id<wSize;i++)//loop over all chunks used
+    {    
+     unit mask=masks(i/sz);
+     unit bit=static_cast<unit>(1)<<(i%sz);
+     if((bit&mask)==0)continue;//outside window
+       int iChunk=chunkStart+i;
+       unit chunk=col(iChunk/sz);
+       unit chunk2=col(iChunk/sz+nr/2);
+       /*cout<<id<<" "<<i<<" here\n";
+       cout<<"first chunk\n";
+       print_bits(chunk&bit);
+       cout<<endl;
+       cout<<"second chunk\n";
+       print_bits(chunk2&bit);
+       cout<<endl;*/
+       if((chunk&bit)!=0 && (chunk2&bit)!=0){ret(id)=2;}
+       else if((chunk&bit)!=0){ret(id)=1;}
        else{ret(id)=0;}
        id++;
     }
    return ret;
  }
 
+void print_bits(unit u)
+  {
+    std::bitset<sz> set(u);
+    std::cout<<set;
+  }
+
+void print_bits(const Col<unit>& v)
+ {
+  for(int i=0;i<v.n_elem;i++){
+     print_bits(v(i)); 
+     std::cout<<std::endl;
+   }
+  std::cout<<std::endl;
+ }

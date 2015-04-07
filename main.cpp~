@@ -20,6 +20,7 @@
 #include <limits.h>
 #include <algorithm>
 #include <stdint.h>
+#include <bitset>
 #include "bitwise_input/bitwise_input_header.hpp"
 #include "util/util_header.hpp"
 #include "bitwise_kpca/bitwise_kpca_header.hpp"
@@ -111,7 +112,7 @@ int main(int argc, char* argv[]){
   arma::mat evec;
   clock_t st_time,ed_time;
   cout<<"reading "<<filename<<"\n";
-  read_snps(dataset,filename);
+  read_snps(dataset,filename,N,L);
   cout<<"Input done \n";
   
   st_time=clock();
@@ -148,7 +149,10 @@ int main(int argc, char* argv[]){
         for(int j=0;j<ancestry.n_elem;j++)
           {
 		qout<<ancestry(j)<<" ";
-                Q(i,j)=ancestry(j);
+		if(aFlag)
+		{
+                  Q(i,j)=ancestry(j);
+		}
           }
 	  qout<<"\n";
    }

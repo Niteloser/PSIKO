@@ -20,6 +20,7 @@
 #include <limits.h>
 #include <algorithm>
 #include <stdint.h>
+#include <bitset>
 #include "bitwise_input/bitwise_input_header.hpp"
 #include "util/util_header.hpp"
 #include "bitwise_kpca/bitwise_kpca_header.hpp"
@@ -110,8 +111,9 @@ int main(int argc, char* argv[]){
   vec evals;
   arma::mat evec;
   clock_t st_time,ed_time;
+  long long N,L;
   cout<<"reading "<<filename<<"\n";
-  read_snps(dataset,filename);
+  read_snps(dataset,filename,N,L);
   cout<<"Input done \n";
   
   st_time=clock();

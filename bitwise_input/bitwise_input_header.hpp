@@ -25,13 +25,13 @@
 using namespace std;
 using namespace arma;
 
-typedef  uint64_t unit;
+typedef  int64_t unit;
 extern const unit sz=sizeof(unit)*CHAR_BIT;
 
 int get_cols(char* fname);
 
 int get_rows(char* fname,int nc);
 
-bool read_snps(Mat<unit>& data, char* fname);
+bool read_snps(Mat<unit>& data, char* fname,long long &N, long long &L);
 
 #include "bitwise_input_impl.hpp"

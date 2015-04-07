@@ -22,6 +22,12 @@ unsigned int popcount64(unsigned long long x);
 
 int findScree(arma::vec evals);
 
-arma::mat getWindow(Mat<unit>& dataset,int wSize,int start);
+void print_bits(const Col<unit>& v);
+
+void print_bits(unit u);
+
+arma::mat getWindow(Mat<unit>& dataset,int wSize,int start,long long L);
+
+
 
 #include "util_impl.hpp"
