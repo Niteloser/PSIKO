@@ -171,7 +171,7 @@ int main(int argc, char* argv[]){
   rout.close();
   if(aFlag)
   {
-    localAncestry(dataset,evec,ancestryFile,Q);
+    localAncestry(dataset,evals,evec,ancestryFile,Q);
   }
 
 }

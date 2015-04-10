@@ -16,20 +16,18 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
     */
 
-inline arma::vec inferAncestry(const arma::vec& x,const arma::mat& A);
+    arma::mat applyWindow(const arma::mat& dataWindow, arma::mat& evec, arma::mat& evals,arma::mat Q){
+        //compute principal components
+        arma::mat W=dataWindow*evec;
+        W.each_row() /= sqrt(evals.t());
+        //project data window onto PCs
+        arma::mat projected=W.t()*dataWindow;
+        scale(projected);
 
-unsigned int popcount64(unsigned long long x);
+        arma::mat means=findMeans(projected,Q);
+        arma::mat stds=findStds(projected,Q);
 
-int findScree(arma::vec evals);
+        delete &dataWindow;
 
-void print_bits(const Col<unit>& v);
-
-void print_bits(unit u);
-
-arma::mat& getDatasetWindow(Mat<unit>& dataset,long long start, long long end, long long L);
-
-arma::vec getWindow(const Col<unit>& dataset,long long wSize,long long start,long long L);
-
-void scale(arma::mat& mt);
-
-#include "util_impl.hpp"
+        return projected;
+    }

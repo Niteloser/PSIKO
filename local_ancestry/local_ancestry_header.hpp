@@ -16,20 +16,8 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
     */
 
-inline arma::vec inferAncestry(const arma::vec& x,const arma::mat& A);
+arma::mat applyWindow(const arma::mat& dataWindow, arma::mat& evec, arma::mat& eval,arma::mat Q);
 
-unsigned int popcount64(unsigned long long x);
 
-int findScree(arma::vec evals);
 
-void print_bits(const Col<unit>& v);
-
-void print_bits(unit u);
-
-arma::mat& getDatasetWindow(Mat<unit>& dataset,long long start, long long end, long long L);
-
-arma::vec getWindow(const Col<unit>& dataset,long long wSize,long long start,long long L);
-
-void scale(arma::mat& mt);
-
-#include "util_impl.hpp"
+#include "local_ancestry_impl.hpp"

@@ -110,6 +110,17 @@ inline int Factorial(int x) {
 }
 
 
+arma::mat& getDatasetWindow(Mat<unit>& dataset,long long start, long long end, long long L)
+ {
+  end=min(end,L);
+  arma::mat* ret=new arma::mat(end-start,dataset.n_cols);
+  for(int i=0;i<dataset.n_cols;i++)
+     {
+      ret->unsafe_col(i)=getWindow(dataset.unsafe_col(i),start,end,L);
+     }
+  return *ret;
+ }
+
 arma::vec getWindow(const Col<unit>& col, long long start, long long end,long long L)
  {
    //return window of individual ind starting at start
@@ -127,8 +138,8 @@ arma::vec getWindow(const Col<unit>& col, long long start, long long end,long lo
     }
    masks(0)&=~((static_cast<unit>(1)<<(start%sz))-1);
    masks(n-1)&=((static_cast<unit>(1)<<(end%sz))-1);
-   std::cout<<"masks"<<std::endl;
-   print_bits(masks);
+   //std::cout<<"masks"<<std::endl;
+   //print_bits(masks);
    int id=0;
    int chunkStart=start-(start%sz);
    for(int i=0;id<wSize;i++)//loop over all chunks used
@@ -168,3 +179,10 @@ void print_bits(const Col<unit>& v)
    }
   std::cout<<std::endl;
  }
+
+void scale(arma::mat& mt){
+  arma::colvec mtMean = arma::mean(mt, 1);
+  arma::colvec mtStd = arma::stddev(mt, 1, 1);
+  mt.each_col() -= mtMean;
+  mt.each_col() /=mtStd;
+}
