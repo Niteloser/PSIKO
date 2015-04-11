@@ -16,6 +16,47 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
     */
 
+    arma::cube findStds(arma::mat projected, arma::mat Q)
+      {
+        arma::cube ret(projected.n_rows,projected.n_rows,Q.n_cols);
+        for(int j=0;j<Q.n_cols;j++)
+        {
+          arma::mat localData(projected.n_rows,1);
+          for(int i=0;i<Q.n_rows;i++)
+             {
+                if(Q(i,j)<0.97)continue;
+                localData.insert_cols(0,projected.unsafe_col(i));
+             }
+          localData.shed_col(localData.n_cols-1);
+          cout<<j<<" subset\n";
+          cout<<localData;
+          arma::mat cv=arma::cov(localData.t());
+          cout<<"cv\n";
+          cout<<cv;
+          ret.slice(j)=cv;
+        }
+        return ret;
+      }
+
+    arma::mat findMeans(arma::mat projected, arma::mat Q)
+      {
+        arma::mat ret(projected.n_rows,Q.n_cols);
+        for(int j=0;j<Q.n_cols;j++)
+        {
+          arma::mat localData(projected.n_rows,1);
+          for(int i=0;i<Q.n_rows;i++)
+             {
+                if(Q(i,j)<0.97)continue;
+                localData.insert_cols(0,projected.unsafe_col(i));
+             }
+          localData.shed_col(localData.n_cols-1);
+          cout<<j<<" subset\n";
+          cout<<localData;
+          ret.unsafe_col(j)=arma::mean(localData, 1);
+        }
+        return ret;
+      }
+
     arma::mat applyWindow(const arma::mat& dataWindow, arma::mat& evec, arma::mat& evals,arma::mat Q){
         //compute principal components
         arma::mat W=dataWindow*evec;
@@ -25,7 +66,12 @@
         scale(projected);
 
         arma::mat means=findMeans(projected,Q);
-        arma::mat stds=findStds(projected,Q);
+        arma::cube stds=findStds(projected,Q);
+
+        cout<<"means\n";
+        cout<<means;
+        cout<<"stds\n";
+        cout<<stds;
 
         delete &dataWindow;
 
