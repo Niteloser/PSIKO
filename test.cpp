@@ -14,7 +14,8 @@ using namespace std;
 int main(int argc, char* argv[]){
   Mat<unit> dataset;
   char filename[512];
-  strcpy(filename,"testfile.geno");
+  //strcpy(filename,"Example/OSRMatrix_Complete.txt.geno");
+  strcpy(filename,"sim1K3Actual.geno");
   long long N,L;
   arma::mat rDataset;
   vec evals;
@@ -24,14 +25,30 @@ int main(int argc, char* argv[]){
 
   Apply(dataset,rDataset,evals,evec,newDim);
 
-  cout<<evec<<"\n";
-  cout<<rDataset<<"\n";
+  //cout<<evec<<"\n";
+  //cout<<rDataset<<"\n";
   //arma::mat W=evec*(getDatasetWindow(dataset,0,15,L)).t();
   cout<<rDataset;
-  arma::mat Q(3,3);
-  Q(0,0)=0.97; Q(0,1)=0.97; Q(0,2)=0.97;
-  Q(1,0)=0.97; Q(1,1)=0.03; Q(1,2)=0.0;
-  Q(2,0)=0.0; Q(2,1)=0.97; Q(2,2)=0.97;
-  cout<<applyWindow(getDatasetWindow(dataset,0,15,L),evec,evals,Q);
+  arma::mat means(newDim-1,newDim,arma::fill::zeros);
+  int ind=0; 
+  initialise(rDataset,means);
+  my_optimize(means,rDataset); 
+
+  arma::mat A= arma::ones(1,means.n_cols); 
+  A.insert_rows(1,means);
+  A=arma::inv(A);
+  arma::mat Q;
+  Q=arma::zeros(rDataset.n_cols,means.n_cols);
+  for(int i=0;i<rDataset.n_cols;i++)
+   {
+	  arma::vec ancestry=inferAncestry(rDataset.unsafe_col(i),A);
+      for(int j=0;j<ancestry.n_elem;j++)
+          {
+                  Q(i,j)=ancestry(j);
+          }
+   }
+  cout<<"Q=\n";
+  cout<<Q;
+  applyWindow(getDatasetWindow(dataset,0,15,L),evec,evals,Q);
 
 }

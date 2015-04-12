@@ -24,15 +24,15 @@
           arma::mat localData(projected.n_rows,1);
           for(int i=0;i<Q.n_rows;i++)
              {
-                if(Q(i,j)<0.97)continue;
+                if(Q(i,j)<0.90)continue;
                 localData.insert_cols(0,projected.unsafe_col(i));
              }
           localData.shed_col(localData.n_cols-1);
-          cout<<j<<" subset\n";
-          cout<<localData;
-          arma::mat cv=arma::cov(localData.t());
-          cout<<"cv\n";
-          cout<<cv;
+          //cout<<j<<" subset\n";
+          //cout<<localData;
+          arma::mat cv=arma::cov(localData.t(),1);
+          //cout<<"cv\n";
+          //cout<<cv;
           ret.slice(j)=cv;
         }
         return ret;
@@ -46,19 +46,20 @@
           arma::mat localData(projected.n_rows,1);
           for(int i=0;i<Q.n_rows;i++)
              {
-                if(Q(i,j)<0.97)continue;
+                if(Q(i,j)<0.90)continue;
                 localData.insert_cols(0,projected.unsafe_col(i));
              }
           localData.shed_col(localData.n_cols-1);
-          cout<<j<<" subset\n";
-          cout<<localData;
+          /*cout<<j<<" subset\n";
+          cout<<localData;*/
           ret.unsafe_col(j)=arma::mean(localData, 1);
         }
         return ret;
       }
 
-    arma::mat applyWindow(const arma::mat& dataWindow, arma::mat& evec, arma::mat& evals,arma::mat Q){
+    arma::vec applyWindow(const arma::mat& dataWindow, arma::mat& evec, arma::mat& evals,arma::mat Q){
         //compute principal components
+        arma::vec ret(dataWindow.n_cols);
         arma::mat W=dataWindow*evec;
         W.each_row() /= sqrt(evals.t());
         //project data window onto PCs
@@ -73,7 +74,24 @@
         cout<<"stds\n";
         cout<<stds;
 
+        for(int i=0;i<dataWindow.n_cols;i++)
+          {
+            int mxProb=0;
+            int mxAncestor=-1;
+            for(int j=0;j<means.n_cols;j++)
+              {
+                double prob=mvn(projected.col(i),means.col(j),stds.slice(j));
+                //cout<<"prob("<<i<<","<<j<<")"<<prob<<endl;
+                if(prob>mxProb)
+                 {
+                    mxProb=prob;
+                    mxAncestor=j;
+                 }
+              }
+            ret(i)=mxAncestor;
+          }
+
         delete &dataWindow;
 
-        return projected;
+        return ret;
     }

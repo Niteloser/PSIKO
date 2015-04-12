@@ -16,7 +16,7 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
     */
 
-arma::mat applyWindow(const arma::mat& dataWindow, arma::mat& evec, arma::mat& eval,arma::mat Q);
+arma::vec applyWindow(const arma::mat& dataWindow, arma::mat& evec, arma::mat& eval,arma::mat Q);
 
 
 

@@ -17,6 +17,31 @@
     */
 
 
+const double log2pi = std::log(2.0 * M_PI);
+
+double mvn(arma::vec x,  
+                      arma::vec mean,  
+                      arma::mat sigma, 
+                      bool logd = false) { 
+    int xdim = x.n_elem;
+    arma::vec ret(1);
+    arma::mat sigma_inv = arma::inv(sigma);
+    double sigma_det=arma::det(sigma);
+    arma::rowvec x_t=(x-mean).t();
+    arma::vec x_n=x-mean;
+    /*cout<<"sigma\n";
+    cout<<sigma; 
+    cout<<"det\n";
+    cout<<sigma_det;*/
+    //cout<<1.0-0.5*x_t*sigma_inv*x_n;
+    ret=-0.5*x_t*sigma_inv*x_n-0.5*std::log(sigma_det)-0.5*xdim*log2pi;
+     
+    if (logd == false) {
+        ret = exp(ret);
+    }
+    return ret(0);
+}
+
 inline arma::vec inferAncestry(const arma::vec& x,const arma::mat& A)
 {
   arma::mat od=arma::ones(x.n_elem+1,1);

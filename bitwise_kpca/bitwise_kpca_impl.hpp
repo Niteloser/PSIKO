@@ -88,8 +88,8 @@ void Apply(const arma::Mat<unit>& data,
   /*cout<<"Kernel Matrix\n";
   kernelMatrix.print();*/
   eigvec = arma::fliplr(eigvec);
-  cout<<"eigenvectors\n";
-  eigvec.print();
+  //cout<<"eigenvectors\n";
+  //eigvec.print();
   //cout<<"eigenvalues\n";
   arma::rowvec lambda=sqrt(eigval.t());
   //lambda.print();
