@@ -25,6 +25,7 @@
 #include "util/util_header.hpp"
 #include "bitwise_kpca/bitwise_kpca_header.hpp"
 #include "optimise/optimise_header.hpp"
+#include "local_ancestry/local_ancestry_header.hpp"
 
 
 int main(int argc, char* argv[]){
@@ -40,7 +41,7 @@ int main(int argc, char* argv[]){
   int lFlag=0;
   int aFlag=0;
 
-  while ((c = getopt (argc, argv, "i:K:q:r:l:a")) != -1)
+  while ((c = getopt (argc, argv, "i:K:q:r:l:a:")) != -1)
          switch (c)
            {
            case 'i':
@@ -52,10 +53,10 @@ int main(int argc, char* argv[]){
            case 'K':
              newDim = atoi(optarg);
              break;
-	   case 'a':
-	     aFlag=1;
-             strcpy(ancestryFile,optarg);
-	     break;
+	         case 'a':
+	            aFlag=1;
+              strcpy(ancestryFile,optarg);
+	            break;
            case 'r':
               strcpy(red,optarg);
               break;
@@ -171,7 +172,22 @@ int main(int argc, char* argv[]){
   rout.close();
   if(aFlag)
   {
-    localAncestry(dataset,evals,evec,ancestryFile,Q);
+    int wSize=50;
+    arma::mat orig(L,N);
+    for(int i=0;i<L-wSize;i+=wSize)
+     {
+      arma::vec anc=applyWindow(getDatasetWindow(dataset,i,i+wSize,L),evec,evals,Q);
+      for(int k=0;k<anc.n_elem;k++)
+      {
+        for(int j=i;j<i+wSize;j++)
+          {
+            orig(j,k)=anc(k);
+          }
+      }  
+    }
+    ofstream aout(ancestryFile);
+    aout<<orig;
+    aout.close();
   }
-
+ 
 }

@@ -69,10 +69,10 @@
         arma::mat means=findMeans(projected,Q);
         arma::cube stds=findStds(projected,Q);
 
-        cout<<"means\n";
+        /*cout<<"means\n";
         cout<<means;
         cout<<"stds\n";
-        cout<<stds;
+        cout<<stds;*/
 
         for(int i=0;i<dataWindow.n_cols;i++)
           {

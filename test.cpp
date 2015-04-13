@@ -49,6 +49,20 @@ int main(int argc, char* argv[]){
    }
   cout<<"Q=\n";
   cout<<Q;
-  applyWindow(getDatasetWindow(dataset,0,15,L),evec,evals,Q);
-
+  int wSize=50;
+  arma::mat orig(L,N);
+  for(int i=0;i<=L-wSize;i+=wSize)
+   {
+      arma::vec anc=applyWindow(getDatasetWindow(dataset,i,i+wSize,L),evec,evals,Q);
+      for(int k=0;k<anc.n_elem;k++)
+      {
+        for(int j=i;j<i+wSize;j++)
+          {
+            orig(j,k)=anc(k);
+          }
+      }  
+   }
+  ofstream aout("ancestryTest.txt");
+  aout<<orig;
+  aout.close();
 }
