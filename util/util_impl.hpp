@@ -16,6 +16,32 @@
     along with this program.  If not, see http://www.gnu.org/licenses/.
     */
 
+
+const double log2pi = std::log(2.0 * M_PI);
+
+double mvn(arma::vec x,  
+                      arma::vec mean,  
+                      arma::mat sigma, 
+                      bool logd = false) { 
+    int xdim = x.n_elem;
+    arma::vec ret(1);
+    arma::mat sigma_inv = arma::inv(sigma);
+    double sigma_det=arma::det(sigma);
+    arma::rowvec x_t=(x-mean).t();
+    arma::vec x_n=x-mean;
+    /*cout<<"sigma\n";
+    cout<<sigma; 
+    cout<<"det\n";
+    cout<<sigma_det;*/
+    //cout<<1.0-0.5*x_t*sigma_inv*x_n;
+    ret=-0.5*x_t*sigma_inv*x_n-0.5*std::log(sigma_det)-0.5*xdim*log2pi;
+     
+    if (logd == false) {
+        ret = exp(ret);
+    }
+    return ret(0);
+}
+
 inline arma::vec inferAncestry(const arma::vec& x,const arma::mat& A)
 {
   arma::mat od=arma::ones(x.n_elem+1,1);
@@ -106,4 +132,82 @@ int findScree(arma::vec evals)
 
 inline int Factorial(int x) {
   return (x == 1 ? x : x * Factorial(x - 1));
+}
+
+
+arma::mat& getDatasetWindow(Mat<unit>& dataset,long long start, long long end, long long L)
+ {
+  end=min(end,L);
+  arma::mat* ret=new arma::mat(end-start,dataset.n_cols);
+  for(int i=0;i<dataset.n_cols;i++)
+     {
+      ret->unsafe_col(i)=getWindow(dataset.unsafe_col(i),start,end,L);
+     }
+  return *ret;
+ }
+
+arma::vec getWindow(const Col<unit>& col, long long start, long long end,long long L)
+ {
+   //return window of individual ind starting at start
+   end=min(end,L);
+   int wSize=end-start;
+   arma::vec ret=arma::zeros<arma::vec>(wSize);
+   int startChunk=start/sz;    
+   int endChunk=end/sz;
+   int n=endChunk-startChunk+1;
+   int nr=col.n_elem;
+   Col<unit> masks(n);
+   for(int i=0;i<n;i++)
+    {
+      masks(i)=static_cast<unit>(-1);//all ones 
+    }
+   masks(0)&=~((static_cast<unit>(1)<<(start%sz))-1);
+   masks(n-1)&=((static_cast<unit>(1)<<(end%sz))-1);
+   //std::cout<<"masks"<<std::endl;
+   //print_bits(masks);
+   int id=0;
+   int chunkStart=start-(start%sz);
+   for(int i=0;id<wSize;i++)//loop over all chunks used
+    {    
+     unit mask=masks(i/sz);
+     unit bit=static_cast<unit>(1)<<(i%sz);
+     if((bit&mask)==0)continue;//outside window
+       int iChunk=chunkStart+i;
+       unit chunk=col(iChunk/sz);
+       unit chunk2=col(iChunk/sz+nr/2);
+       /*cout<<id<<" "<<i<<" here\n";
+       cout<<"first chunk\n";
+       print_bits(chunk&bit);
+       cout<<endl;
+       cout<<"second chunk\n";
+       print_bits(chunk2&bit);
+       cout<<endl;*/
+       if((chunk&bit)!=0 && (chunk2&bit)!=0){ret(id)=2;}
+       else if((chunk&bit)!=0){ret(id)=1;}
+       else{ret(id)=0;}
+       id++;
+    }
+   return ret;
+ }
+
+void print_bits(unit u)
+  {
+    std::bitset<sz> set(u);
+    std::cout<<set;
+  }
+
+void print_bits(const Col<unit>& v)
+ {
+  for(int i=0;i<v.n_elem;i++){
+     print_bits(v(i)); 
+     std::cout<<std::endl;
+   }
+  std::cout<<std::endl;
+ }
+
+void scale(arma::mat& mt){
+  arma::colvec mtMean = arma::mean(mt, 1);
+  arma::colvec mtStd = arma::stddev(mt, 1, 1);
+  mt.each_col() -= mtMean;
+  mt.each_col() /=mtStd;
 }

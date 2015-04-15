@@ -88,15 +88,16 @@ void Apply(const arma::Mat<unit>& data,
   /*cout<<"Kernel Matrix\n";
   kernelMatrix.print();*/
   eigvec = arma::fliplr(eigvec);
-  /*cout<<"eigenvectors\n";
-  eigvec.print();
-  cout<<"eigenvalues\n";*/
+  //cout<<"eigenvectors\n";
+  //eigvec.print();
+  //cout<<"eigenvalues\n";
   arma::rowvec lambda=sqrt(eigval.t());
   //lambda.print();
-  eigvec.each_row() %= lambda;
+  transformedData=eigvec;
+  transformedData.each_row() %= lambda;
   //cout<<"after division\n";
   //eigvec.print();
-  transformedData = eigvec.t();//eigvec.t() * kernelMatrix;
+  transformedData = transformedData.t();//eigvec.t() * kernelMatrix;
 
     if(nComp<0)
      {
@@ -105,23 +106,12 @@ void Apply(const arma::Mat<unit>& data,
      }    
     
     cout<<"K= "<<nComp<<"\n";
-    if(nComp<transformedData.n_rows)transformedData.shed_rows(nComp-1,transformedData.n_rows-1);
+    if(nComp<=transformedData.n_rows){
+                                      transformedData.shed_rows(nComp-1,transformedData.n_rows-1);
+                                      eigvec.shed_cols(nComp-1,eigvec.n_cols-1);
+                                      eigval.shed_rows(nComp-1,eigval.n_rows-1);
+                                     }
     //transformedData.shed_row(0);    
 
-    arma::colvec transformedDataMean = arma::mean(transformedData, 1);
-    arma::colvec transformedDataStd = arma::stddev(transformedData, 1, 1);
-
-    /*cout<<"before norming\n";
-    transformedData.print();*/
-
-    /*cout<<"mean\n";
-    transformedDataMean.print();
-    cout<<"std\n";
-    transformedDataStd.print();*/
-
-    /*transformedData = transformedData - (transformedDataMean *
-        arma::ones<arma::rowvec>(transformedData.n_cols));
-    transformedData =transformedData/(transformedDataStd *arma::ones<arma::rowvec>(transformedData.n_cols));*/
-    transformedData.each_col() -= transformedDataMean;
-    transformedData.each_col() /=transformedDataStd;
+    scale(transformedData);
 }

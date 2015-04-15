@@ -44,11 +44,13 @@ int get_rows(char* fname,int nc)
 }
 
 
-bool read_snps(Mat<unit>& data, char* fname)
+bool read_snps(Mat<unit>& data, char* fname,long long &N, long long &L)
 {     
      int nc=get_cols(fname);
      int nr=get_rows(fname,nc);
      FILE *f = fopen(fname,"r");
+     N=nc;
+     L=nr;
      cout<<nr<<" rows X "<<nc<<" columns\n";
      data.set_size((nr/sz+1)*2,nc);
      data.fill(0);
