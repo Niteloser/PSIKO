@@ -153,7 +153,13 @@ int main(int argc, char* argv[]){
 		qout<<ancestry(j)<<" ";
 		if(aFlag)
 		{
-                  Q(i,j)=ancestry(j);
+      /*if(i<300)
+         {
+          Q(i,i/100)=1.0;
+         }
+         else{*/
+        Q(i,j)=ancestry(j);
+             //}
 		}
           }
 	  qout<<"\n";
@@ -170,23 +176,38 @@ int main(int argc, char* argv[]){
     rout<<"\n";
   }
   rout.close();
+
+  /*cout<<"reduced\n";
+  for(int i=0;i<10;i++)
+    cout<<rDataset.col(i).t();*/
+
   if(aFlag)
   {
     int wSize=50;
-    arma::mat orig(L,N);
-    for(int i=0;i<L-wSize;i+=wSize)
+    arma::Mat<int> orig(L,N);
+    int cnt=0;
+    for(long long i=0;i<L;i+=wSize, cnt++)
      {
+      //if(cnt>2)break;
+      //if(i<=50)cout<<"window "<<i<<endl;
       arma::vec anc=applyWindow(getDatasetWindow(dataset,i,i+wSize,L),evec,evals,Q);
       for(int k=0;k<anc.n_elem;k++)
       {
-        for(int j=i;j<i+wSize;j++)
+        for(int j=i;j<min(i+wSize,L);j++)
           {
-            orig(j,k)=anc(k);
+            orig(j,k)=static_cast<int>(anc(k));
           }
       }  
     }
     ofstream aout(ancestryFile);
-    aout<<orig;
+    orig=orig.t();
+    for(int i=0;i<orig.n_rows;i++){
+      for(int j=0;j<orig.n_cols;j++)
+       {
+        aout<<orig(i,j)<<" ";
+       }
+       aout<<"\n";
+     }
     aout.close();
   }
  

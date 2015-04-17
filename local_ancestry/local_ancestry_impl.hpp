@@ -24,7 +24,7 @@
           arma::mat localData(projected.n_rows,1);
           for(int i=0;i<Q.n_rows;i++)
              {
-                if(Q(i,j)<0.90)continue;
+                if(Q(i,j)<0.9)continue;
                 localData.insert_cols(0,projected.unsafe_col(i));
              }
           localData.shed_col(localData.n_cols-1);
@@ -34,6 +34,7 @@
           //cout<<"cv\n";
           //cout<<cv;
           ret.slice(j)=cv;
+          
         }
         return ret;
       }
@@ -46,7 +47,7 @@
           arma::mat localData(projected.n_rows,1);
           for(int i=0;i<Q.n_rows;i++)
              {
-                if(Q(i,j)<0.90)continue;
+                if(Q(i,j)<0.9)continue;
                 localData.insert_cols(0,projected.unsafe_col(i));
              }
           localData.shed_col(localData.n_cols-1);
@@ -64,30 +65,33 @@
         W.each_row() /= sqrt(evals.t());
         //project data window onto PCs
         arma::mat projected=W.t()*dataWindow;
-        scale(projected);
-
+        //scale(projected);
         arma::mat means=findMeans(projected,Q);
         arma::cube stds=findStds(projected,Q);
-
         /*cout<<"means\n";
         cout<<means;
         cout<<"stds\n";
-        cout<<stds;*/
+        cout<<stds;
+        cout<<"projected\n";
+        for(int i=0;i<10;i++)
+          cout<<projected.col(i).t();*/
 
         for(int i=0;i<dataWindow.n_cols;i++)
           {
-            int mxProb=0;
+            double mxProb=0;
             int mxAncestor=-1;
             for(int j=0;j<means.n_cols;j++)
               {
                 double prob=mvn(projected.col(i),means.col(j),stds.slice(j));
-                //cout<<"prob("<<i<<","<<j<<")"<<prob<<endl;
                 if(prob>mxProb)
                  {
                     mxProb=prob;
                     mxAncestor=j;
+                    //if(i==21){cout<<"current max "<<mxAncestor<<"with mxProb "<<mxProb<<" and prob "<<prob<<"\n";}
                  }
+               //if(i==21){cout<<"prob("<<i<<","<<j<<")"<<prob<<endl;}                 
               }
+            //if(i==21){cout<<"max ancestor= "<<mxAncestor<<"\n";}
             ret(i)=mxAncestor;
           }
 
